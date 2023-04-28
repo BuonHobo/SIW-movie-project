@@ -3,12 +3,14 @@ package it.uniroma3.siw.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.Year;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"title", "year"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"title", "release_date"})})
 public class Movie {
 
     @Id
@@ -19,19 +21,22 @@ public class Movie {
     @NotBlank
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false,name = "release_date")
     @PastOrPresent
-    private Year year;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date releaseDate;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn()
     private Admin addedBy;
+
+    private Date addedDate;
 
     @OneToMany(mappedBy = "movie")
     private Set<Review> reviews;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn()
     private Artist director;
 
     @ManyToMany
@@ -48,14 +53,20 @@ public class Movie {
         Movie movie = (Movie) o;
 
         if (!title.equals(movie.title)) return false;
-        return year.equals(movie.year);
+        return releaseDate.equals(movie.releaseDate);
     }
 
     @Override
     public int hashCode() {
         int result = title.hashCode();
-        result = 31 * result + year.hashCode();
+        result = 31 * result + releaseDate.hashCode();
         return result;
+    }
+
+    public int getYear(){
+        Calendar calendar= Calendar.getInstance();
+        calendar.setTime(releaseDate);
+        return calendar.get(Calendar.YEAR);
     }
 
     public Long getId() {
@@ -74,12 +85,12 @@ public class Movie {
         this.title = title;
     }
 
-    public Year getYear() {
-        return year;
+    public Date getReleaseDate() {
+        return releaseDate;
     }
 
-    public void setYear(Year year) {
-        this.year = year;
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
     public Admin getAddedBy() {
@@ -88,6 +99,14 @@ public class Movie {
 
     public void setAddedBy(Admin addedBy) {
         this.addedBy = addedBy;
+    }
+
+    public Date getAddedDate() {
+        return addedDate;
+    }
+
+    public void setAddedDate(Date addedDate) {
+        this.addedDate = addedDate;
     }
 
     public Set<Review> getReviews() {

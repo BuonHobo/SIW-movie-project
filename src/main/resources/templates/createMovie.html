@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+    <form th:action="@{/createMovie}" method="post" th:object="${movie}">
+        <div th:if="${#fields.hasGlobalErrors()}">
+            <p th:each="err:${#fields.globalErrors()}" th:text="${err}"></p>
+        </div>
+        <div>
+            <label><span th:text="#{movie.title}">Title here</span>
+                <span> <input type="text" th:field="${movie.title}"></span>
+                <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+            </label>
+        </div>
+        <div>
+            <label> <span th:text="#{movie.releaseDate}">Release Date here </span>
+                <span> <input type="date" th:field="${movie.releaseDate}"></span>
+                <span th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}"></span>
+            </label>
+        </div>
+        <button type="submit" th:text="#{confirm}"></button>
+    </form>
+</div>
+
+</body>
+</html>
