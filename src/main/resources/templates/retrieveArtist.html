@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="${artist.getFullName()}"></title>
+</head>
+<body>
+
+<h1 th:text="${artist.getFullName()}"></h1>
+<div th:text="#{artist.bornOn} +' '+ ${artist.birthday}"></div>
+
+<img th:src="@{'data:image/'+${artist.picture.getFormat()}+';base64,'+${artist.picture.getBase64()}}" width="100">
+
+<a th:text="#{home.returnTo}" th:href="@{/}"></a>
+
+
+</body>
+</html>

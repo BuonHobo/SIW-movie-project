@@ -1,8 +1,8 @@
 package it.uniroma3.siw.controller;
 
 import it.uniroma3.siw.controller.validator.MovieValidator;
+import it.uniroma3.siw.model.Image;
 import it.uniroma3.siw.model.Movie;
-import it.uniroma3.siw.model.MovieImage;
 import it.uniroma3.siw.repository.MovieRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class MovieController {
 
         for (MultipartFile file : files) {
             try {
-                MovieImage immagine = new MovieImage(file.getOriginalFilename(), file.getBytes(), movie);
+                Image immagine = new Image(file.getOriginalFilename(), file.getBytes());
                 String format = immagine.getFormat();
                 if (!(format.equals("jpeg") || format.equals("png") || format.equals("jpg"))) {
                     bindingResult.reject("image.formatNotSupported");
@@ -85,7 +85,7 @@ public class MovieController {
         if (optionalMovie.isEmpty()) return "home";
         Movie movie = optionalMovie.get();
         try {
-            movie.getImages().add(new MovieImage(file.getOriginalFilename(), file.getBytes(), movie));
+            movie.getImages().add(new Image(file.getOriginalFilename(), file.getBytes()));
         } catch (IOException ex) {
             return "home";
         }

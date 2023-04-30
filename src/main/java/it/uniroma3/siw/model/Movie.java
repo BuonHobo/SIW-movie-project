@@ -33,6 +33,7 @@ public class Movie {
     @JoinColumn()
     private Admin addedBy;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date addedDate;
 
     @OneToMany(mappedBy = "movie")
@@ -45,11 +46,11 @@ public class Movie {
     @ManyToMany
     private Set<Artist> actors;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie")
-    private Set<MovieImage> images;
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Image> images;
 
-    public MovieImage getFirstImage() {
-        Optional<MovieImage> image = images.stream().findFirst();
+    public Image getFirstImage() {
+        Optional<Image> image = images.stream().findFirst();
         return image.orElse(null);
     }
 
@@ -142,11 +143,11 @@ public class Movie {
         this.actors = actors;
     }
 
-    public Set<MovieImage> getImages() {
+    public Set<Image> getImages() {
         return images;
     }
 
-    public void setImages(Set<MovieImage> images) {
+    public void setImages(Set<Image> images) {
         this.images = images;
     }
 }

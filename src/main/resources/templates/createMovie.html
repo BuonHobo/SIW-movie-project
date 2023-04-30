@@ -16,8 +16,8 @@
         <div>
             <label><span th:text="#{movie.insertTitle}">Title here</span>
                 <input type="text" th:field="${movie.title}" required>
-                <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
             </label>
+            <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
         </div>
         <div>
             <label> <span th:text="#{movie.insertReleaseDate}">Release Date here</span>

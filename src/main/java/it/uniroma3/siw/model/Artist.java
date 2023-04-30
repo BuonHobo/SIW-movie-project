@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.Set;
@@ -25,9 +26,12 @@ public class Artist {
 
     @PastOrPresent
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @NotNull
     private Date birthday;
 
     @PastOrPresent
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date deathDate;
 
     @ManyToMany(mappedBy = "actors")
@@ -36,9 +40,8 @@ public class Artist {
     @OneToMany(mappedBy = "director")
     private Set<Movie> directedMovies;
 
-    @OneToOne
-    @PrimaryKeyJoinColumn
-    @NotNull
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn
     private Image picture;
 
     public String getFullName(){
