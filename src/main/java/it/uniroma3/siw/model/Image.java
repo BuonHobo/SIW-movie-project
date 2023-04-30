@@ -1,6 +1,9 @@
 package it.uniroma3.siw.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.Base64;
 
 @Entity
 public class Image {
@@ -9,8 +12,30 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String path;
+    @NotNull
+    @Column(nullable = false)
+    private String fileName;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private final ImageData imageData;
+
+    public Image(String name, byte[] data){
+        this();
+        fileName=name;
+        imageData.setData(data);
+    }
+
+    public String getFormat(){
+        return getFileName().substring(1+getFileName().lastIndexOf('.'));
+    }
+
+    public String getBase64() {
+        return Base64.getEncoder().encodeToString(imageData.getData());
+    }
+
+    public Image() {
+        this.imageData = new ImageData();
+    }
 
     public Long getId() {
         return id;
@@ -20,12 +45,20 @@ public class Image {
         this.id = id;
     }
 
-    public String getPath() {
-        return path;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setFileName(String path) {
+        this.fileName = path;
+    }
+
+    public byte[] getImageData() {
+        return imageData.getData();
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData.setData(imageData);
     }
 
     @Override
@@ -35,11 +68,11 @@ public class Image {
 
         Image image = (Image) o;
 
-        return path.equals(image.path);
+        return fileName.equals(image.fileName);
     }
 
     @Override
     public int hashCode() {
-        return path.hashCode();
+        return fileName.hashCode();
     }
 }

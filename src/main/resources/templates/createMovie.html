@@ -1,29 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title th:text="#{movie.addMovie}"></title>
 </head>
 <body>
 
+<h1 th:text="#{movie.addMovie}"></h1>
+
 <div>
-    <form th:action="@{/createMovie}" method="post" th:object="${movie}">
+    <form th:action="@{/createMovie}" method="post" th:object="${movie}" enctype="multipart/form-data">
         <div th:if="${#fields.hasGlobalErrors()}">
             <p th:each="err:${#fields.globalErrors()}" th:text="${err}"></p>
         </div>
         <div>
-            <label><span th:text="#{movie.title}">Title here</span>
-                <span> <input type="text" th:field="${movie.title}"></span>
+            <label><span th:text="#{movie.insertTitle}">Title here</span>
+                <input type="text" th:field="${movie.title}" required>
                 <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
             </label>
         </div>
         <div>
-            <label> <span th:text="#{movie.releaseDate}">Release Date here </span>
-                <span> <input type="date" th:field="${movie.releaseDate}"></span>
-                <span th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}"></span>
+            <label> <span th:text="#{movie.insertReleaseDate}">Release Date here</span>
+                <input type="date" th:field="${movie.releaseDate}" required>
+            </label>
+            <span th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}"></span>
+        </div>
+        <div>
+            <label> <span th:text="#{movie.insertImage}">Image here</span>
+                <input type="file" name="files" required accept="image/jpeg, image/jpg, image/png" multiple>
             </label>
         </div>
         <button type="submit" th:text="#{confirm}"></button>
+        <a th:href="@{/}">
+            <button type="button" th:text="#{cancel}"></button>
+        </a>
     </form>
 </div>
 

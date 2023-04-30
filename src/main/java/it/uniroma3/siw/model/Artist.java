@@ -28,7 +28,6 @@ public class Artist {
     private Date birthday;
 
     @PastOrPresent
-    @Column(nullable = true)
     private Date deathDate;
 
     @ManyToMany(mappedBy = "actors")
@@ -41,6 +40,10 @@ public class Artist {
     @PrimaryKeyJoinColumn
     @NotNull
     private Image picture;
+
+    public String getFullName(){
+        return getFirstName() +' '+ getLastName();
+    }
 
     @Override
     public boolean equals(Object o) {

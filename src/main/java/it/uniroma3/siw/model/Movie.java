@@ -2,11 +2,13 @@ package it.uniroma3.siw.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -21,9 +23,10 @@ public class Movie {
     @NotBlank
     private String title;
 
-    @Column(nullable = false,name = "release_date")
+    @Column(nullable = false, name = "release_date")
     @PastOrPresent
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @NotNull
     private Date releaseDate;
 
     @ManyToOne
@@ -42,8 +45,14 @@ public class Movie {
     @ManyToMany
     private Set<Artist> actors;
 
-    @OneToMany
-    private Set<Image> images;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie")
+    private Set<MovieImage> images;
+
+    public MovieImage getFirstImage() {
+        Optional<MovieImage> image = images.stream().findFirst();
+        return image.orElse(null);
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -63,8 +72,8 @@ public class Movie {
         return result;
     }
 
-    public int getYear(){
-        Calendar calendar= Calendar.getInstance();
+    public int getYear() {
+        Calendar calendar = Calendar.getInstance();
         calendar.setTime(releaseDate);
         return calendar.get(Calendar.YEAR);
     }
@@ -133,11 +142,11 @@ public class Movie {
         this.actors = actors;
     }
 
-    public Set<Image> getImages() {
+    public Set<MovieImage> getImages() {
         return images;
     }
 
-    public void setImages(Set<Image> images) {
+    public void setImages(Set<MovieImage> images) {
         this.images = images;
     }
 }

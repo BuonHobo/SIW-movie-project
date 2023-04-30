@@ -1,1 +1,35 @@
-Added successfully
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="${movie.title}"></title>
+</head>
+<body>
+
+<h1 th:text="${movie.title}"></h1>
+<div th:text="#{movie.releasedIn} +' '+ ${movie.year}"></div>
+<div th:if="${movie.director!=null}">
+    <span th:text="#{movie.directedBy} +' '+ ${movie.director.getFullName()}"></span>
+    <a th:href="@{/}" th:text="#{movie.changeDirector}"></a>
+</div>
+<div th:unless="${movie.director!=null}">
+    <a th:href="@{/}" th:text="#{movie.addDirector}"></a>
+</div>
+<div th:each="image : ${movie.images}">
+    <div th:text="${image.getFileName()}"></div>
+    <img th:src="@{'data:image/'+${image.getFormat()}+';base64,'+${image.getBase64()}}" width="100">
+</div>
+
+<form th:action="@{'/addMovieImage/'+${movie.id}}" method="post" enctype="multipart/form-data">
+    <div>
+        <label> <span th:text="#{movie.insertImage}">Image here</span>
+            <input type="file" name="files" required accept="image/jpeg, image/jpg, image/png" multiple>
+        </label>
+    </div>
+    <button type="submit" th:text="#{movie.addImage}"></button>
+</form>
+
+<a th:text="#{home.returnTo}" th:href="@{/}"></a>
+
+
+</body>
+</html>
