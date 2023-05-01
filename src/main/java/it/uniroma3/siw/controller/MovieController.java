@@ -234,4 +234,17 @@ public class MovieController {
 
         return changeMovieActor(movieId,model);
     }
+
+    @GetMapping("/deleteMovie/{movieId}")
+    public String deleteMovie(@PathVariable("movieId") Long movieId, Model model){
+        Movie movie = movieRepository.findById(movieId).orElse(null);
+        if (movie == null) {
+            model.addAttribute("errorMessage", "movie.notFound");
+            return homepage(model);
+        }
+
+        movieRepository.delete(movie);
+        model.addAttribute("errorMessage","movie.deleted");
+        return homepage(model);
+    }
 }

@@ -81,7 +81,7 @@ public class ArtistController {
                 model.addAttribute("errorMessage", "image.formatNotSupported");
                 return retrieveArtist(id, model);
             }
-            Image oldPic= artist.getPicture();
+            Image oldPic = artist.getPicture();
             artist.setPicture(null);
             imageRepository.delete(oldPic);
             artist.setPicture(immagine);
@@ -93,5 +93,23 @@ public class ArtistController {
         artistRepository.save(artist);
         model.addAttribute("artist", artist);
         return "retrieveArtist";
+    }
+
+    @GetMapping("/deleteArtist/{artistId}")
+    public String deleteArtist(@PathVariable("artistId") Long artistId, Model model) {
+        Artist artist = artistRepository.findById(artistId).orElse(null);
+        if (artist == null) {
+            model.addAttribute("errorMessage", "artist.notFound");
+            model.addAttribute("latestMovies", movieRepository.getLatest3Movies());
+            model.addAttribute("artists", artistRepository.get5Artists());
+
+            return "home";
+        }
+
+        artistRepository.delete(artist);
+        model.addAttribute("errorMessage", "artist.deleted");
+        model.addAttribute("artists", artistRepository.get5Artists());
+        model.addAttribute("latestMovies", movieRepository.getLatest3Movies());
+        return "home";
     }
 }

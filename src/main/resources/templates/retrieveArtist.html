@@ -41,6 +41,7 @@
     </ul>
 </div>
 <div>
+    <a th:text="#{artist.delete}" th:href="@{'/deleteArtist/' + ${artist.id}}"></a>
     <a th:text="#{home.returnTo}" th:href="@{/}"></a>
 </div>
 
