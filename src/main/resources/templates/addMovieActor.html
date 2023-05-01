@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{movie.addActor}"></title>
+</head>
+<body>
+<h1 th:text="#{movie.addActorsTo}+' '+${movie.titleYear}"></h1>
+<div>
+  <div  th:text="#{movie.selectedActors}"></div>
+  <ul>
+    <li th:each="artist:${movie.actors}">
+      <a th:href="@{'/removeMovieActor/'+${movie.id}+'/'+${artist.id}}" th:text="${artist.fullName}"></a>
+    </li>
+  </ul>
+</div>
+
+<div>
+  <div  th:text="#{movie.availableActors}"></div>
+  <ul>
+    <li th:each="artist:${artists}">
+      <a th:href="@{'/addMovieActor/'+${movie.id}+'/'+${artist.id}}" th:text="${artist.fullName}"></a>
+    </li>
+  </ul>
+</div>
+<a th:href="@{'/retrieveMovie/'+${movie.id}}" th:text="#{back}"></a>
+</body>
+</html>

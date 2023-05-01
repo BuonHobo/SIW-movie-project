@@ -1,29 +1,58 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title th:text="${movie.title}"></title>
+    <title th:text="${movie.title}">Movie Title</title>
 </head>
 <body>
 
-<h1 th:text="${movie.title}"></h1>
-<div th:text="#{movie.releasedIn} +' '+ ${movie.year}"></div>
+<h1 th:text="${movie.title}">Movie title</h1>
+<h3 th:text="#{movie.releasedIn} +' '+ ${movie.year}">Released in 2023</h3>
 <div th:if="${movie.director!=null}">
-    <span th:text="#{movie.directedBy} +' '+ ${movie.director.getFullName()}"></span>
-    <a th:href="@{/}" th:text="#{movie.changeDirector}"></a>
+    <span th:text="#{movie.directedBy} +' '">Directed by </span>
+    <a th:href="@{'/retrieveArtist/' +${movie.director.id}}" th:text="${movie.director.fullName}+ '.'">Quentin
+        Tarantino.</a>
+    <a th:href="@{'/addMovieDirector/'+${movie.id}}" th:text="#{movie.changeDirector}">Edit director</a>
 </div>
 <div th:unless="${movie.director!=null}">
-    <a th:href="@{/}" th:text="#{movie.addDirector}"></a>
+    <a th:href="@{'/addMovieDirector/'+${movie.id}}" th:text="#{movie.addDirector}">Add Director</a>
 </div>
-<div th:each="image : ${movie.images}">
-    <div th:text="${image.getFileName()}"></div>
-    <img th:src="@{'data:image/'+${image.getFormat()}+';base64,'+${image.getBase64()}}" width="100">
+<div>
+    <h3 th:text="#{movie.actors}"></h3>
+    <ul>
+        <li th:each="artist : ${movie.getActors()}">
+            <a th:href="@{'/retrieveArtist/' +${artist.id}}">
+                <span th:text="${artist.fullName}"></span>
+                <div>
+                    <img th:src="@{'data:image/'+${artist.getPicture().getFormat()}+';base64,'+${artist.picture.getBase64()}}"
+                         width="100">
+                </div>
+            </a>
+        </li>
+    </ul>
+    <a th:text="#{movie.editActors}" th:href="@{'/addMovieActor/'+${movie.id}}"></a>
 </div>
-
-<form th:action="@{'/addMovieImage/'+${movie.id}}" method="post" enctype="multipart/form-data">
+<div>
+    <h3 th:text="#{movie.images}">Here are some images</h3>
+    <ul>
+        <li th:each="image : ${movie.images}">
+            <span th:text="${image.getFileName()}">Filename</span>
+            <div>
+                <img th:src="@{'data:image/'+${image.getFormat()}+';base64,'+${image.getBase64()}}" width="100">
+            </div>
+            <a th:if="${(movie.images.size()>1)}" th:href="@{'/removeMovieImage/' + ${movie.id} + '/' + ${image.id}}"
+               th:text="#{movie.removeImage}">Remove Image</a>
+        </li>
+    </ul>
+</div>
+<form th:action="@{/addMovieImage/}" method="post" enctype="multipart/form-data">
+    <div th:if="${errorMessage}" th:text="#{${errorMessage}}">
+    </div>
     <div>
         <label> <span th:text="#{movie.insertImage}">Image here</span>
+            <br>
             <input type="file" name="files" required accept="image/jpeg, image/jpg, image/png" multiple>
         </label>
+        <input type="hidden" th:value="${movie.id}" name="movieId">
     </div>
     <button type="submit" th:text="#{movie.addImage}"></button>
 </form>

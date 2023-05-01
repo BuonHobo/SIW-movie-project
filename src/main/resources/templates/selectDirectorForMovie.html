@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{artist.selectDirectorFor}+ ' '+ ${movie.title}">Title</title>
+</head>
+<body>
+
+<h1 th:text="#{artist.selectDirectorFor}+ ' '+ ${movie.title}"></h1>
+
+<ul>
+    <li th:each="artist:${artists}">
+        <a th:href="@{'/addMovieDirector/'+${movie.id}+'/'+${artist.id}}" th:text="${artist.fullName}"></a>
+    </li>
+</ul>
+
+</body>
+</html>

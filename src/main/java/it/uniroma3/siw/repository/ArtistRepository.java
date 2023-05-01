@@ -2,6 +2,7 @@ package it.uniroma3.siw.repository;
 
 import it.uniroma3.siw.model.Artist;
 import it.uniroma3.siw.model.Movie;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +18,7 @@ public interface ArtistRepository extends CrudRepository<Artist, Long> {
 
     Set<Artist> findDistinctByDirectedMoviesNotContaining(Movie notDirected);
 
-
-
+    @Query(value = "from Artist a order by a.id desc limit 5")
+    Set<Artist> get5Artists();
 
 }

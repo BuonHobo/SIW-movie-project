@@ -79,6 +79,10 @@ public class Movie {
         return calendar.get(Calendar.YEAR);
     }
 
+    public String getTitleYear(){
+        return getTitle()+" ("+getYear()+")";
+    }
+
     public Long getId() {
         return id;
     }
