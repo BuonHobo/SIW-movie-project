@@ -49,6 +49,7 @@ public class MovieController {
     @PostMapping("/createMovie")
     public String addMovie(@RequestParam("files") MultipartFile[] files, @Valid @ModelAttribute("movie") Movie movie, BindingResult bindingResult, Model model) {
         movieValidator.validate(movie, bindingResult);
+        if (files.length <1) bindingResult.reject("image.notSubmitted");
         if (bindingResult.hasErrors()) {
             return "createMovie";
         }
