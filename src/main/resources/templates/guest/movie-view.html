@@ -16,7 +16,7 @@
 
 
 <div style="display: flex; justify-content: center; align-items: center">
-    <div style="width: 50%">
+    <div style="width: 80%">
 
 
         <div class="container">
@@ -32,7 +32,7 @@
                            th:text="#{movie.removeImage}" style="margin-left: 15%">Remove Image</a>
 
                         <img th:src="@{'data:image/'+${image.getFormat()}+';base64,'+${image.getBase64()}}"
-                             style="max-height: 700px;width: auto;margin:auto" class="d-block w-100" alt="Movie Image">
+                             style="max-height: 500px;width: auto;margin:auto" class="d-block w-100" alt="Movie Image">
                     </div>
                 </div>
                 <a class="carousel-control-prev" href="#movieCarousel" role="button" data-slide="prev"> <span
@@ -67,30 +67,35 @@
                                     <a th:href="@{'/guest/artist/' +${actor.id}}" th:text="${actor.fullName}"></a>
                                 </li>
                             </ul>
-                            <p><a class="card-text" th:text="#{movie.reviews}"
-                                  th:href="@{'/guest/movie/reviews/' + ${movie.id}}"></a></p>
-                            <p th:if="${credentials!=null && credentials.isAdmin()}"><a th:text="#{movie.delete}"
-                                                                                        th:href="@{'/admin/movie/delete/' + ${movie.id}}"></a>
-                            </p>
+                            <form th:if="${credentials!=null && credentials.isAdmin()}"
+                                  th:action="@{/admin/movie/addImages/}" method="post" enctype="multipart/form-data">
+                                <div class="alert alert-warning" role="alert" th:if="${errorMessage}"
+                                     th:text="#{${errorMessage}}"></div>
+
+                                <div class="input-group mb-3">
+
+                                    <button type="submit" class="btn btn-light btn-sm" th:text="#{movie.addImages}">
+                                        Upload
+                                    </button>
+
+                                    <input type="file" name="files" required accept="image/jpeg, image/jpg, image/png"
+                                           multiple>
+
+                                </div>
+
+                                <input type="hidden" th:value="${movie.id}" name="movieId"></form>
+
+                            <a class="card-text btn btn-secondary btn-lg btn-block" th:text="#{movie.reviews}"
+                               th:href="@{'/guest/movie/reviews/' + ${movie.id}}"></a> <a
+                                class="btn btn-danger btn-lg btn-block card-text"
+                                th:if="${credentials!=null && credentials.isAdmin()}" th:text="#{movie.delete}"
+                                th:href="@{'/admin/movie/delete/' + ${movie.id}}"></a>
+
                         </div>
                     </div>
                 </div>
             </div>
-            <form th:if="${credentials!=null && credentials.isAdmin()}" th:action="@{/admin/movie/addImages/}"
-                  method="post" enctype="multipart/form-data">
-                <div th:if="${errorMessage}" th:text="#{${errorMessage}}"></div>
-                <div>
-                    <label> <span th:text="#{movie.insertImage}">Image here</span> <br> <input type="file" name="files"
-                                                                                               required
-                                                                                               accept="image/jpeg, image/jpg, image/png"
-                                                                                               multiple> </label> <input
-                        type="hidden" th:value="${movie.id}" name="movieId">
-                </div>
-                <button type="submit" th:text="#{movie.addImage}"></button>
-            </form>
-            <a th:if="${credentials!=null && credentials.isAdmin()}" th:text="#{movie.delete}"
-               th:href="@{'/admin/movie/delete/' + ${movie.id}}"></a> <a th:text="#{movie.reviews}"
-                                                                         th:href="@{'/guest/movie/reviews/' + ${movie.id}}"></a>
+
         </div>
 
     </div>

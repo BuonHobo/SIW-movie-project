@@ -8,10 +8,10 @@
     <span th:if="${#request.userPrincipal}" th:text="${#request.userPrincipal.principal.username}"
           class="navbar-text nav col-12 col-md-auto mb-2 justify-content-center mb-md-0"></span>
     <div th:if="${#request.userPrincipal}" class="col-md-3 text-end">
-        <a type="button" class="btn btn-outline-primary me-2" href="/logout">Logout</a>
+        <a type="button" class="btn btn-outline-primary" href="/logout">Logout</a>
     </div>
     <div th:unless="${#request.userPrincipal}" class="col-md-3 text-end">
-        <a type="button" class="btn btn-outline-primary me-2" href="/login">Login</a>
+        <a type="button" class="btn btn-outline-primary" href="/login">Login</a>
         <a type="button" class="btn btn-primary  " href="/register">Sign-up</a>
     </div>
 </header>
