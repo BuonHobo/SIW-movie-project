@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title th:text="${movie.titleYear}">Title (year)</title>
+</head>
+<body>
+<div th:replace="components/header"></div>
+
+
+<div style="display: flex; justify-content: center; align-items: center">
+    <div style="width: 50%">
+
+
+        <div class="container">
+            <h1>Movie Information</h1>
+
+            <div id="movieCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div th:each="image, iterStat : ${movie.images}" class="carousel-item"
+                         th:classappend="${iterStat.first} ? 'active'">
+
+                        <a th:if="${credentials!=null && credentials.isAdmin() && (movie.images.size()>1)}"
+                           th:href="@{'/admin/movie/deleteImage/' + ${movie.id} + '/' + ${image.id}}"
+                           th:text="#{movie.removeImage}" style="margin-left: 15%">Remove Image</a>
+
+                        <img th:src="@{'data:image/'+${image.getFormat()}+';base64,'+${image.getBase64()}}"
+                             style="max-height: 700px;width: auto;margin:auto" class="d-block w-100" alt="Movie Image">
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#movieCarousel" role="button" data-slide="prev"> <span
+                        class="carousel-control-prev-icon" aria-hidden="true"></span> <span
+                        class="sr-only">Previous</span> </a> <a class="carousel-control-next" href="#movieCarousel"
+                                                                role="button" data-slide="next"> <span
+                    class="carousel-control-next-icon" aria-hidden="true"></span> <span class="sr-only">Next</span> </a>
+            </div>
+
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-md-12">
+                        <div class="card-body">
+                            <h1 class="card-title" th:text="${movie.title}"></h1>
+                            <p class="card-text"><strong>Release Date:</strong> <span
+                                    th:text="${#dates.format(movie.releaseDate,'dd/MM/yyyy')}"></span></p>
+                            <p class="card-text"><strong>Director:</strong> <a th:if="${movie.director!=null}"
+                                                                               th:href="@{'/guest/artist/' +${movie.director.id}}"
+                                                                               th:text="${movie.director.fullName}+ '.'">Quentin
+                                Tarantino.</a> <a th:if="${credentials!=null && credentials.isAdmin()}"
+                                                  th:href="@{'/admin/movie/selectDirector/'+${movie.id}}"> <span
+                                    th:if="${movie.director!=null}"
+                                    th:text="#{movie.changeDirector}">Edit director</span> <span
+                                    th:unless="${movie.director!=null}"
+                                    th:text="#{movie.addDirector}">Add director</span> </a>
+                            </p>
+                            <p class="card-text"><strong>Actors:</strong> <span><a
+                                    th:if="${credentials!=null && credentials.isAdmin()}" th:text="#{movie.editActors}"
+                                    th:href="@{'/admin/movie/editActors/'+${movie.id}}"></a> </span></p>
+                            <ul>
+                                <li th:each="actor : ${movie.actors}">
+                                    <a th:href="@{'/guest/artist/' +${actor.id}}" th:text="${actor.fullName}"></a>
+                                </li>
+                            </ul>
+                            <p><a class="card-text" th:text="#{movie.reviews}"
+                                  th:href="@{'/guest/movie/reviews/' + ${movie.id}}"></a></p>
+                            <p th:if="${credentials!=null && credentials.isAdmin()}"><a th:text="#{movie.delete}"
+                                                                                        th:href="@{'/admin/movie/delete/' + ${movie.id}}"></a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form th:if="${credentials!=null && credentials.isAdmin()}" th:action="@{/admin/movie/addImages/}"
+                  method="post" enctype="multipart/form-data">
+                <div th:if="${errorMessage}" th:text="#{${errorMessage}}"></div>
+                <div>
+                    <label> <span th:text="#{movie.insertImage}">Image here</span> <br> <input type="file" name="files"
+                                                                                               required
+                                                                                               accept="image/jpeg, image/jpg, image/png"
+                                                                                               multiple> </label> <input
+                        type="hidden" th:value="${movie.id}" name="movieId">
+                </div>
+                <button type="submit" th:text="#{movie.addImage}"></button>
+            </form>
+            <a th:if="${credentials!=null && credentials.isAdmin()}" th:text="#{movie.delete}"
+               th:href="@{'/admin/movie/delete/' + ${movie.id}}"></a> <a th:text="#{movie.reviews}"
+                                                                         th:href="@{'/guest/movie/reviews/' + ${movie.id}}"></a>
+        </div>
+
+    </div>
+</div>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+</html>

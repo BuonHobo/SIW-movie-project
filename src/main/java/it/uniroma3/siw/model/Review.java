@@ -1,12 +1,12 @@
 package it.uniroma3.siw.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"movie","author"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"movie", "author"})})
 public class Review {
 
     @Id
@@ -23,15 +23,24 @@ public class Review {
     private Integer rating;
 
     @Column(length = 4000)
+    @NotBlank
     private String body;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "author")
-    private RegisteredUser author;
+    @JoinColumn(nullable = false, name = "author")
+    private User author;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "movie")
+    @JoinColumn(nullable = false, name = "movie")
     private Movie movie;
+
+    public Review(User author, Movie movie) {
+        this.author = author;
+        this.movie = movie;
+    }
+
+    public Review() {
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -49,5 +58,53 @@ public class Review {
         int result = author.hashCode();
         result = 31 * result + movie.hashCode();
         return result;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public Movie getMovie() {
+        return movie;
+    }
+
+    public void setMovie(Movie movie) {
+        this.movie = movie;
     }
 }

@@ -18,7 +18,4 @@ public interface ArtistRepository extends CrudRepository<Artist, Long> {
 
     Set<Artist> findDistinctByDirectedMoviesNotContaining(Movie notDirected);
 
-    @Query(value = "from Artist a order by a.id desc limit 5")
-    Set<Artist> get5Artists();
-
 }

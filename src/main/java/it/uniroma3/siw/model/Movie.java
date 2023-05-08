@@ -1,9 +1,10 @@
 package it.uniroma3.siw.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Calendar;
@@ -31,12 +32,12 @@ public class Movie {
 
     @ManyToOne
     @JoinColumn()
-    private Admin addedBy;
+    private User addedBy;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date addedDate;
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.REMOVE)
     private Set<Review> reviews;
 
     @ManyToOne
@@ -79,8 +80,8 @@ public class Movie {
         return calendar.get(Calendar.YEAR);
     }
 
-    public String getTitleYear(){
-        return getTitle()+" ("+getYear()+")";
+    public String getTitleYear() {
+        return getTitle() + " (" + getYear() + ")";
     }
 
     public Long getId() {
@@ -107,11 +108,11 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
-    public Admin getAddedBy() {
+    public User getAddedBy() {
         return addedBy;
     }
 
-    public void setAddedBy(Admin addedBy) {
+    public void setAddedBy(User addedBy) {
         this.addedBy = addedBy;
     }
 

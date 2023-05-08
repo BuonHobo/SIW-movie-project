@@ -13,9 +13,6 @@ import java.util.Set;
 @Repository
 public interface MovieRepository extends CrudRepository<Movie,Long> {
 
-    @Query(value = "from Movie m order by m.addedDate limit 5")
-    List<Movie> getLatest3Movies();
-
     boolean existsByTitleAndReleaseDate(String Title, Date releaseDate);
     Movie findByTitleAndReleaseDate(String Title, Date releaseDate);
 
