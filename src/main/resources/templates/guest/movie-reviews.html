@@ -44,7 +44,7 @@
                                     Integer posuere erat a ante.</p>
                                 <footer class="blockquote-footer"><span
                                         th:text="${userReview.rating}+' stars from '"></span> <cite
-                                        title="Source Title">You :)</cite>
+                                        title="Source Title">YOU :)</cite>
                                 </footer>
                             </blockquote>
                             <a th:href="@{'/user/review/delete/'+${userReview.id}}" class="card-link"
@@ -63,20 +63,21 @@
                                 <p th:text="${review.body}">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                                     Integer posuere erat a ante.</p>
                                 <footer class="blockquote-footer"><span
-                                        th:text="${review.rating}+' stars from '"></span> <cite title="Source Title"
-                                                                                                th:text="${review.author.name}">Author</cite>
+                                        th:text="${review.rating}+' stars from '"></span> <cite title="Source Title"><a
+                                        th:href="@{'/guest/reviews/' + ${review.author.id}}"
+                                        th:text="${review.author.name}"></a></cite>
                                 </footer>
                             </blockquote>
                             <a th:if="${credentials!=null && credentials.isAdmin()}"
-                               th:href="@{'/admin/review/delete/'+${review.id}}" class="card-link"
+                               th:href="@{'/user/review/delete/'+${review.id}}" class="card-link"
                                th:text="#{review.delete}">Remove review</a>
                         </div>
                     </div>
                 </li>
             </ul>
         </div>
-        <a type="button" class="btn btn-secondary btn-lg" style="margin-bottom: 100px" th:href="@{'/guest/movie/' + ${movie.id}}"> <span
-                th:text="#{movie.backTo}">back to the movie</span> </a>
+        <a type="button" class="btn btn-secondary btn-lg" style="margin-bottom: 100px"
+           th:href="@{'/guest/movie/' + ${movie.id}}"> <span th:text="#{movie.backTo}">back to the movie</span> </a>
     </div>
 </div>
 

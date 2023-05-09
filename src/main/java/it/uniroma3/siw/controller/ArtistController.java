@@ -11,6 +11,7 @@ import javax.validation.Valid;
 
 import it.uniroma3.siw.service.CredentialsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
 
 @Controller
@@ -51,7 +53,7 @@ public class ArtistController {
         try {
             Image immagine = new Image(file.getOriginalFilename(), file.getBytes());
             String format = immagine.getFormat();
-            if (!(format.equals("jpeg") || format.equals("png") || format.equals("jpg")|| format.equals("webp"))) {
+            if (!(format.equals("jpeg") || format.equals("png") || format.equals("jpg") || format.equals("webp"))) {
                 bindingResult.reject("image.formatNotSupported");
             }
             artist.setPicture(immagine);
@@ -138,6 +140,24 @@ public class ArtistController {
             model.addAttribute("credentials", credentials);
         }
         return "guest/artist-viewAll";
+    }
 
+    @PostMapping("/admin/artist/setDeath")
+    public String setDeath(@RequestParam("artistId") Long id, @RequestParam("deathDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date deathDate, Model model) {
+        Artist artist = artistRepository.findById(id).orElse(null);
+        if (artist == null) {
+            model.addAttribute("errorMessage", "artist.notFound");
+
+            return authenticationController.index(model);
+        }
+
+        if (artist.getBirthday().before(deathDate) && deathDate.before(new Date())) {
+            artist.setDeathDate(deathDate);
+            artistRepository.save(artist);
+        } else {
+            model.addAttribute("errorMessage", "artist.deathDateInvalid");
+        }
+
+        return retrieveArtist(id, model);
     }
 }

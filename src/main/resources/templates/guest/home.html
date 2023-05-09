@@ -23,6 +23,9 @@
             <a type="button" class="btn btn-primary btn-lg btn-block" th:text="#{artist.viewAll}"
                th:href="@{/guest/artists}">Artists</a>
 
+            <a th:if="${credentials!=null}" type="button" class="btn btn-secondary btn-lg btn-block" th:text="#{user.reviews}"
+               th:href="@{'/guest/reviews/'+${credentials.user.id}}">Artists</a>
+
             <!--Admin only-->
             <a th:if="${credentials!=null && credentials.isAdmin()}" type="button"
                class="btn btn-danger btn-lg btn-block" th:text="#{movie.addMovie}"

@@ -15,8 +15,11 @@ public interface ReviewRepository extends CrudRepository<Review, Long> {
     List<Review> findAllByMovie(Movie movie);
 
     Optional<Review> findByAuthorAndMovie(User Author, Movie movie);
+
     @Query("SELECT r FROM Review r WHERE r.movie = :movie AND r.author != :author")
     List<Review> findByMovieAndNotByAuthor(@Param("movie") Movie movie, @Param("author") User author);
+
+    List<Review> findAllByAuthor_Id(Long authorId);
 
     void deleteAllByMovie(Movie movie);
 }

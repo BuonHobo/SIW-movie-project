@@ -97,13 +97,50 @@ public class ReviewController {
             Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
             model.addAttribute("credentials", credentials);
             model.addAttribute("userReview", reviewRepository.findByAuthorAndMovie(credentials.getUser(), movie).orElse(null));
-            model.addAttribute("reviews", reviewRepository.findByMovieAndNotByAuthor(movie,credentials.getUser()));
+            model.addAttribute("reviews", reviewRepository.findByMovieAndNotByAuthor(movie, credentials.getUser()));
         } else {
             List<Review> reviews = reviewRepository.findAllByMovie(movie);
             model.addAttribute("reviews", reviews);
         }
 
         return "guest/movie-reviews";
+    }
+
+    @GetMapping("/guest/reviews/{userId}")
+    public String userReviews(@PathVariable("userId") Long id, Model model) {
+        List<Review> userReviews = reviewRepository.findAllByAuthor_Id(id);
+
+        model.addAttribute("reviews", userReviews);
+        if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
+            model.addAttribute("credentials", credentials);
+            model.addAttribute("isAuthor", credentials.getUser().getId().equals(id));
+        } else {
+            model.addAttribute("isAuthor", false);
+        }
+
+        return "guest/user-reviews";
+    }
+
+    @GetMapping("/user/review/delete/{reviewId}")
+    public String deleteReview(@PathVariable("reviewId") Long id, Model model) {
+        Review review = reviewRepository.findById(id).orElse(null);
+        if (review == null) {
+            model.addAttribute("errorMessage", "review.notFound");
+            return authenticationController.index(model);
+        }
+
+        if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
+
+            if (credentials.getUser().getId().equals(review.getAuthor().getId()) || credentials.isAdmin()) {
+                reviewRepository.delete(review);
+            }
+        }
+
+        return movieReviews(review.getMovie().getId(), model);
     }
 
 }
