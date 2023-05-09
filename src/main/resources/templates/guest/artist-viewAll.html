@@ -22,7 +22,9 @@
                         <a th:href="@{'/guest/artist/'+${artist.id}}"> <img class="card-img-top"
                                                                             th:src="@{'data:image/'+${artist.getPicture().getFormat()}+';base64,'+${artist.getPicture().getBase64()}}"
                                                                             th:alt="${artist.getPicture().getFileName()}"
-                                                                            height="300px">
+                                                                            height="300px"
+                                                                            style="object-fit: cover"
+                        >
                             <div class="card-body">
                                 <h5 class="card-title" th:text="${artist.fullName}">Movie title</h5>
                             </div>

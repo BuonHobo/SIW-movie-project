@@ -16,7 +16,7 @@
 <p th:if="${errorMessage}" th:text="#{${errorMessage}}"></p>
 
 <h1 th:text="${artist.getFullName()}"></h1>
-<div th:text="#{artist.bornOn} +' '+ ${#dates.format(artist.birthday,'dd-MM-2023')}"></div>
+<div th:text="#{artist.bornOn} +' '+ ${#dates.format(artist.birthday,'dd-MM-yyyy')}"></div>
 <div>
     <img th:src="@{'data:image/'+${artist.picture.getFormat()}+';base64,'+${artist.picture.getBase64()}}" width="100">
     <form th:if="${credentials!=null && credentials.isAdmin()}" th:action="@{/admin/artist/changePicture}" method="post" enctype="multipart/form-data">
@@ -25,7 +25,7 @@
         <div>
             <label> <span th:text="#{artist.changeImage}">Image here</span>
                 <br>
-                <input type="file" name="file" required accept="image/jpeg, image/jpg, image/png">
+                <input type="file" name="file" required accept="image/jpeg, image/jpg, image/png, image/webp">
             </label>
             <input type="hidden" th:value="${artist.id}" name="artistId">
         </div>

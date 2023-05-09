@@ -32,7 +32,8 @@
                            th:text="#{movie.removeImage}" style="margin-left: 15%">Remove Image</a>
 
                         <img th:src="@{'data:image/'+${image.getFormat()}+';base64,'+${image.getBase64()}}"
-                             style="max-height: 500px;width: auto;margin:auto" class="d-block w-100" alt="Movie Image">
+                             style="max-height: 500px;object-fit: contain" class="d-block w-100"
+                             alt="Movie Image">
                     </div>
                 </div>
                 <a class="carousel-control-prev" href="#movieCarousel" role="button" data-slide="prev"> <span
@@ -78,7 +79,7 @@
                                         Upload
                                     </button>
 
-                                    <input type="file" name="files" required accept="image/jpeg, image/jpg, image/png"
+                                    <input type="file" name="files" required accept="image/jpeg, image/jpg, image/png, image/webp"
                                            multiple>
 
                                 </div>

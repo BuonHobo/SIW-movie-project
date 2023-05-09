@@ -36,7 +36,7 @@
                 <div th:if="${#fields.hasErrors('credentials.password')}" th:errors="${credentials.password}"
                       class="alert alert-warning" role="alert"></div>
                 <label for="password">Password</label>
-                <input type="text" class="form-control" id="password" placeholder="Password" required
+                <input type="password" class="form-control" id="password" placeholder="Password" required
                        th:field="${credentials.password}">
             </div>
             <button type="submit" class="btn btn-primary" th:text="#{confirm}">Submit</button>

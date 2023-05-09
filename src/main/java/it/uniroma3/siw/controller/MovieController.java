@@ -65,7 +65,7 @@ public class MovieController {
             try {
                 Image immagine = new Image(file.getOriginalFilename(), file.getBytes());
                 String format = immagine.getFormat();
-                if (!(format.equals("jpeg") || format.equals("png") || format.equals("jpg"))) {
+                if (!(format.equals("jpeg") || format.equals("png") || format.equals("jpg") || format.equals("webp"))) {
                     bindingResult.reject("image.formatNotSupported");
                     continue;
                 }
@@ -114,7 +114,7 @@ public class MovieController {
             try {
                 Image immagine = new Image(file.getOriginalFilename(), file.getBytes());
                 String format = immagine.getFormat();
-                if (!(format.equals("jpeg") || format.equals("png") || format.equals("jpg"))) {
+                if (!(format.equals("jpeg") || format.equals("png") || format.equals("jpg") || format.equals("webp"))) {
                     model.addAttribute("errorMessage", "image.formatNotSupported");
                     return retrieveMovie(id, model);
                 }
