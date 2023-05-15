@@ -16,7 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -40,7 +40,7 @@ public class ReviewController {
 
         if (movie == null) {
             model.addAttribute("errorMessage", "movie.notFound");
-            return authenticationController.index(model);
+            return authenticationController.index();
         }
 
         Review review = reviewRepository.findByAuthorAndMovie(credentials.getUser(), movie)
@@ -58,7 +58,7 @@ public class ReviewController {
         Movie movie = movieRepository.findById(movieId).orElse(null);
         if (movie == null) {
             model.addAttribute("errorMessage", "movie.notFound");
-            return authenticationController.index(model);
+            return authenticationController.index();
         }
 
 
@@ -87,7 +87,7 @@ public class ReviewController {
 
         if (movie == null) {
             model.addAttribute("errorMessage", "movie.notFound");
-            return authenticationController.index(model);
+            return authenticationController.index();
         }
         model.addAttribute("movie", movie);
 
@@ -95,7 +95,6 @@ public class ReviewController {
         if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
-            model.addAttribute("credentials", credentials);
             model.addAttribute("userReview", reviewRepository.findByAuthorAndMovie(credentials.getUser(), movie).orElse(null));
             model.addAttribute("reviews", reviewRepository.findByMovieAndNotByAuthor(movie, credentials.getUser()));
         } else {
@@ -114,7 +113,6 @@ public class ReviewController {
         if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
-            model.addAttribute("credentials", credentials);
             model.addAttribute("isAuthor", credentials.getUser().getId().equals(id));
         } else {
             model.addAttribute("isAuthor", false);
@@ -128,7 +126,7 @@ public class ReviewController {
         Review review = reviewRepository.findById(id).orElse(null);
         if (review == null) {
             model.addAttribute("errorMessage", "review.notFound");
-            return authenticationController.index(model);
+            return authenticationController.index();
         }
 
         if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {

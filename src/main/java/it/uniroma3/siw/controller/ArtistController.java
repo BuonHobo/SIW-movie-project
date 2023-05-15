@@ -1,20 +1,14 @@
 package it.uniroma3.siw.controller;
 
 import it.uniroma3.siw.model.Artist;
-import it.uniroma3.siw.model.Credentials;
 import it.uniroma3.siw.model.Image;
 import it.uniroma3.siw.repository.ArtistRepository;
 import it.uniroma3.siw.repository.ImageRepository;
 import it.uniroma3.siw.repository.MovieRepository;
-
-import javax.validation.Valid;
-
 import it.uniroma3.siw.service.CredentialsService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Optional;
 
 @Controller
 public class ArtistController {
@@ -74,14 +67,7 @@ public class ArtistController {
 
         if (artistOptional == null) {
             model.addAttribute("errorMessage", "artist.notFound");
-            return authenticationController.index(model);
-        }
-
-
-        if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
-            model.addAttribute("credentials", credentials);
+            return authenticationController.index();
         }
 
         model.addAttribute("artist", artistOptional);
@@ -93,7 +79,7 @@ public class ArtistController {
         Artist artist = artistRepository.findById(id).orElse(null);
         if (artist == null) {
             model.addAttribute("errorMessage", "artist.notFound");
-            return authenticationController.index(model);
+            return authenticationController.index();
         }
 
         try {
@@ -123,22 +109,18 @@ public class ArtistController {
         if (artist == null) {
             model.addAttribute("errorMessage", "artist.notFound");
 
-            return authenticationController.index(model);
+            return authenticationController.index();
         }
 
         artistRepository.delete(artist);
         model.addAttribute("errorMessage", "artist.deleted");
-        return authenticationController.index(model);
+        return authenticationController.index();
     }
 
     @GetMapping("/guest/artists")
     public String artists(Model model) {
         model.addAttribute("artists", artistRepository.findAll());
-        if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
-            model.addAttribute("credentials", credentials);
-        }
+
         return "guest/artist-viewAll";
     }
 
@@ -148,7 +130,7 @@ public class ArtistController {
         if (artist == null) {
             model.addAttribute("errorMessage", "artist.notFound");
 
-            return authenticationController.index(model);
+            return authenticationController.index();
         }
 
         if (artist.getBirthday().before(deathDate) && deathDate.before(new Date())) {

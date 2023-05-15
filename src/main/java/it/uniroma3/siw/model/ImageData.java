@@ -1,6 +1,6 @@
 package it.uniroma3.siw.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 public class ImageData {

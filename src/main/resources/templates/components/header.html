@@ -5,12 +5,12 @@
     <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none ml-2">
         <img src="/images/logo-siw.png" height="35">
     </a>
-    <span th:if="${#request.userPrincipal}" th:text="${#request.userPrincipal.principal.username}"
+    <span th:if="${credentials!=null}" th:text="${credentials.user.name}"
           class="navbar-text nav col-12 col-md-auto mb-2 justify-content-center mb-md-0"></span>
-    <div th:if="${#request.userPrincipal}" class="col-md-3 text-end">
+    <div th:if="${credentials!=null}" class="col-md-3 text-end">
         <a type="button" class="btn btn-outline-primary" href="/logout">Logout</a>
     </div>
-    <div th:unless="${#request.userPrincipal}" class="col-md-3 text-end">
+    <div th:unless="${credentials!=null}" class="col-md-3 text-end">
         <a type="button" class="btn btn-outline-primary" href="/login">Login</a>
         <a type="button" class="btn btn-primary  " href="/register">Sign-up</a>
     </div>

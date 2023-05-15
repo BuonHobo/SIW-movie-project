@@ -12,7 +12,7 @@
     <title>SIW Movie</title>
 </head>
 <body>
-<div th:replace="components/header"></div>
+<div th:replace="~{components/header}"></div>
 <div style="display: flex; justify-content: center; align-items: center">
     <div style="width: 50%">
         <div th:if="${successMessage}" class="alert alert-success" th:text="#{${successMessage}}"></div>

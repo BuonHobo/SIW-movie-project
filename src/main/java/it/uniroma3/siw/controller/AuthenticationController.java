@@ -1,22 +1,17 @@
 package it.uniroma3.siw.controller;
 
-import javax.validation.Valid;
-
 import it.uniroma3.siw.controller.validator.CredentialsValidator;
+import it.uniroma3.siw.model.Credentials;
+import it.uniroma3.siw.model.User;
+import it.uniroma3.siw.service.CredentialsService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import it.uniroma3.siw.model.Credentials;
-import it.uniroma3.siw.model.User;
-import it.uniroma3.siw.service.CredentialsService;
 
 @Controller
 public class AuthenticationController {
@@ -28,23 +23,19 @@ public class AuthenticationController {
 
     @GetMapping(value = "/register")
     public String showRegisterForm(Model model) {
-        model.addAttribute("user", new User());
-        model.addAttribute("credentials", new Credentials());
+        model.addAttribute("newUser", new User());
+        model.addAttribute("newCredentials", new Credentials());
         return "guest/register";
     }
 
     @GetMapping(value = "/login")
-    public String showLoginForm(Model model) {
+    public String showLoginForm() {
         return "guest/login";
     }
 
     @GetMapping(value = "/")
-    public String index(Model model) {
-        if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
-            model.addAttribute("credentials", credentials);
-        }
+    public String index() {
+
 
         return "guest/home";
     }
@@ -52,13 +43,13 @@ public class AuthenticationController {
     @GetMapping(value = "/success")
     public String defaultAfterLogin(Model model) {
         model.addAttribute("successMessage","login.success");
-        return index(model);
+        return index();
     }
 
     @PostMapping(value = {"/register"})
-    public String registerUser(@Valid @ModelAttribute("user") User user,
+    public String registerUser(@Valid @ModelAttribute("newUser") User user,
                                BindingResult userBindingResult, @Valid
-                               @ModelAttribute("credentials") Credentials credentials,
+                               @ModelAttribute("newCredentials") Credentials credentials,
                                BindingResult credentialsBindingResult,
                                Model model) {
 
