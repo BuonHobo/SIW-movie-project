@@ -15,7 +15,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import static it.uniroma3.siw.model.Credentials.ADMIN_ROLE;
-import static it.uniroma3.siw.model.Credentials.DEFAULT_ROLE;
 
 import javax.sql.DataSource;
 
@@ -58,8 +57,8 @@ public class AuthConfiguration {
                 .requestMatchers(HttpMethod.POST, "/register", "/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/admin/**").hasAnyAuthority(ADMIN_ROLE)
                 .requestMatchers(HttpMethod.POST, "/admin/**").hasAnyAuthority(ADMIN_ROLE)
-                .requestMatchers(HttpMethod.GET, "/admin/**").hasAnyAuthority(DEFAULT_ROLE)
-                .requestMatchers(HttpMethod.POST, "/admin/**").hasAnyAuthority(DEFAULT_ROLE)
+                .requestMatchers(HttpMethod.GET, "/user/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/user/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/guest/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/guest/**").permitAll()
                 // tutti gli utenti autenticati possono accere alle pagine rimanenti
