@@ -78,7 +78,7 @@ public class MovieController {
         return "redirect:/guest/movie/" + movie.getId();
     }
 
-    @GetMapping("/guest/movie/{id}")
+    @GetMapping("/guest/movie/{id}") //TODO dovrebbe esserci anche il rating
     public String retrieveMovie(@PathVariable("id") Long id, Model model) {
         Movie movie = movieRepository.findById(id).orElse(null);
         if (movie == null) {
