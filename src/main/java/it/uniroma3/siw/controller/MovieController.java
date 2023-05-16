@@ -78,13 +78,14 @@ public class MovieController {
         return "redirect:/guest/movie/" + movie.getId();
     }
 
-    @GetMapping("/guest/movie/{id}") //TODO dovrebbe esserci anche il rating
+    @GetMapping("/guest/movie/{id}")
     public String retrieveMovie(@PathVariable("id") Long id, Model model) {
         Movie movie = movieRepository.findById(id).orElse(null);
         if (movie == null) {
             model.addAttribute("errorMessage", "movie.notFound");
             return "guest/home";
         }
+        model.addAttribute("rating",movieRepository.getAverageRatingByMovie(movie));
         model.addAttribute("movie", movie);
 
         return "guest/movie-view";

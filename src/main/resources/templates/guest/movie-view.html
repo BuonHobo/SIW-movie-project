@@ -50,6 +50,8 @@
                         </div>
                         <div class="card-body">
                             <h1 class="card-title" th:text="${movie.title}"></h1>
+                            <p class="card-text"><strong>Average rating:</strong> <span
+                                    th:text="${rating}"></span></p>
                             <p class="card-text"><strong>Release Date:</strong> <span
                                     th:text="${#dates.format(movie.releaseDate,'dd/MM/yyyy')}"></span></p>
                             <p class="card-text"><strong>Director:</strong> <a th:if="${movie.director!=null}"
