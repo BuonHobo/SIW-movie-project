@@ -4,9 +4,10 @@ import it.uniroma3.siw.model.Credentials;
 import it.uniroma3.siw.model.Movie;
 import it.uniroma3.siw.model.Review;
 import it.uniroma3.siw.model.User;
-import it.uniroma3.siw.repository.MovieRepository;
-import it.uniroma3.siw.repository.ReviewRepository;
 import it.uniroma3.siw.service.CredentialsService;
+import it.uniroma3.siw.service.MovieService;
+import it.uniroma3.siw.service.ReviewService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,37 +17,29 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @Controller
 public class ReviewController {
     @Autowired
-    ReviewRepository reviewRepository;
-    @Autowired
-    MovieRepository movieRepository;
-    @Autowired
-    AuthenticationController authenticationController;
-    @Autowired
     CredentialsService credentialsService;
     @Autowired
-    MovieController movieController;
+    ReviewService reviewService;
+    @Autowired
+    MovieService movieService;
 
     @GetMapping("/user/review/write/{movieId}")
     public String writeReview(@PathVariable("movieId") Long movieId, Model model) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
-        Movie movie = movieRepository.findById(movieId).orElse(null);
+        User user = credentials.getUser();
 
-        if (movie == null) {
-            model.addAttribute("errorMessage", "movie.notFound");
-            return authenticationController.index();
+        try {
+            model.addAttribute("review", reviewService.getUserReviewOfMovieId(movieId, user));
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "guest/home";
         }
-
-        Review review = reviewRepository.findByAuthorAndMovie(credentials.getUser(), movie)
-                .orElse(new Review(credentials.getUser(), movie));
-
-        model.addAttribute("review", review);
         return "user/review-add";
     }
 
@@ -55,50 +48,37 @@ public class ReviewController {
         if (bindingResult.hasErrors()) {
             return "user/review-add";
         }
-        Movie movie = movieRepository.findById(movieId).orElse(null);
-        if (movie == null) {
-            model.addAttribute("errorMessage", "movie.notFound");
-            return authenticationController.index();
-        }
-
-
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
         User author = credentials.getUser();
 
-        Review oldReview = reviewRepository.findByAuthorAndMovie(author, movie).orElse(null);
-        review.setMovie(movie);
-        if (oldReview != null) {
-            oldReview.setRating(rating);
-            oldReview.setBody(review.getBody());
-            oldReview.setTitle(review.getTitle());
-            reviewRepository.save(oldReview);
-        } else {
-            review.setAuthor(author);
-            review.setRating(rating);
-            reviewRepository.save(review);
+        try {
+            reviewService.updateReview(author, movieId, review, rating);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "guest/home";
         }
         return movieReviews(review.getMovie().getId(), model);
     }
 
     @GetMapping("/guest/movie/reviews/{movieId}")
     public String movieReviews(@PathVariable("movieId") Long movieId, Model model) {
-        Movie movie = movieRepository.findById(movieId).orElse(null);
-
-        if (movie == null) {
-            model.addAttribute("errorMessage", "movie.notFound");
-            return authenticationController.index();
+        Movie movie;
+        try {
+            movie = movieService.findById(movieId);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "guest/home";
         }
         model.addAttribute("movie", movie);
-
 
         if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
-            model.addAttribute("userReview", reviewRepository.findByAuthorAndMovie(credentials.getUser(), movie).orElse(null));
-            model.addAttribute("reviews", reviewRepository.findByMovieAndNotByAuthor(movie, credentials.getUser()));
+            model.addAttribute("userReview", reviewService.findByAuthorAndMovie(credentials.getUser(), movie).orElse(null));
+            model.addAttribute("reviews", reviewService.findByMovieAndNotByAuthor(movie, credentials.getUser()));
         } else {
-            List<Review> reviews = reviewRepository.findAllByMovie(movie);
+            List<Review> reviews = reviewService.findAllByMovie(movie);
             model.addAttribute("reviews", reviews);
         }
 
@@ -107,7 +87,7 @@ public class ReviewController {
 
     @GetMapping("/guest/reviews/{userId}")
     public String userReviews(@PathVariable("userId") Long id, Model model) {
-        List<Review> userReviews = reviewRepository.findAllByAuthor_Id(id);
+        List<Review> userReviews = reviewService.findAllByAuthor_Id(id);
 
         model.addAttribute("reviews", userReviews);
         if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
@@ -123,22 +103,21 @@ public class ReviewController {
 
     @GetMapping("/user/review/delete/{reviewId}")
     public String deleteReview(@PathVariable("reviewId") Long id, Model model) {
-        Review review = reviewRepository.findById(id).orElse(null);
-        if (review == null) {
-            model.addAttribute("errorMessage", "review.notFound");
-            return authenticationController.index();
-        }
-
+        Long movieId = null;
         if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
 
-            if (credentials.getUser().getId().equals(review.getAuthor().getId()) || credentials.isAdmin()) {
-                reviewRepository.delete(review);
+            try {
+                movieId = reviewService.deleteByIdIfPossible(id, credentials).getId();
+            } catch (Exception e) {
+                model.addAttribute("errorMessage", e.getMessage());
+                return "guest/home";
             }
+
         }
 
-        return movieReviews(review.getMovie().getId(), model);
+        return movieReviews(movieId, model);
     }
 
 }
