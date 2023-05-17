@@ -2,10 +2,7 @@ package it.uniroma3.siw.controller;
 
 import it.uniroma3.siw.model.Artist;
 import it.uniroma3.siw.model.Image;
-import it.uniroma3.siw.repository.ArtistRepository;
-import it.uniroma3.siw.repository.ImageRepository;
-import it.uniroma3.siw.repository.MovieRepository;
-import it.uniroma3.siw.service.CredentialsService;
+import it.uniroma3.siw.service.ArtistService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,15 +18,7 @@ import java.util.Date;
 @Controller
 public class ArtistController {
     @Autowired
-    ArtistRepository artistRepository;
-    @Autowired
-    MovieRepository movieRepository;
-    @Autowired
-    ImageRepository imageRepository;
-    @Autowired
-    CredentialsService credentialsService;
-    @Autowired
-    AuthenticationController authenticationController;
+    ArtistService artistService;
 
     @GetMapping("admin/artist/add")
     public String createArtist(Model model) {
@@ -44,102 +33,74 @@ public class ArtistController {
         }
 
         try {
-            Image immagine = new Image(file.getOriginalFilename(), file.getBytes());
-            String format = immagine.getFormat();
-            if (!(format.equals("jpeg") || format.equals("png") || format.equals("jpg") || format.equals("webp"))) {
-                bindingResult.reject("image.formatNotSupported");
-            }
+            Image immagine = new Image(file);
             artist.setPicture(immagine);
         } catch (IOException ex) {
             bindingResult.reject("image.readError");
+        } catch (Exception e) {
+            bindingResult.reject(e.getMessage());
         }
 
         if (bindingResult.hasErrors()) return "admin/artist-add";
 
-        artistRepository.save(artist);
+        artistService.save(artist);
         model.addAttribute("artist", artist);
         return retrieveArtist(artist.getId(), model);
     }
 
     @GetMapping("/guest/artist/{id}")
     public String retrieveArtist(@PathVariable("id") Long id, Model model) {
-        Artist artistOptional = artistRepository.findById(id).orElse(null);
-
-        if (artistOptional == null) {
-            model.addAttribute("errorMessage", "artist.notFound");
-            return authenticationController.index();
+        try {
+            model.addAttribute("artist", artistService.findById(id));
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "guest/home";
         }
-
-        model.addAttribute("artist", artistOptional);
         return "guest/artist-view";
     }
 
     @PostMapping("/admin/artist/changePicture")
     public String changeArtistPicture(@RequestParam("artistId") Long id, @RequestParam("file") MultipartFile file, Model model) {
-        Artist artist = artistRepository.findById(id).orElse(null);
-        if (artist == null) {
-            model.addAttribute("errorMessage", "artist.notFound");
-            return authenticationController.index();
-        }
-
         try {
-            Image immagine = new Image(file.getOriginalFilename(), file.getBytes());
-            String format = immagine.getFormat();
-            if (!(format.equals("jpeg") || format.equals("png") || format.equals("jpg") || format.equals("webp"))) {
-                model.addAttribute("errorMessage", "image.formatNotSupported");
-                return retrieveArtist(id, model);
-            }
-            Image oldPic = artist.getPicture();
-            artist.setPicture(null);
-            imageRepository.delete(oldPic);
-            artist.setPicture(immagine);
+            Image immagine = new Image(file);
+            artistService.changeArtistIdImage(id, immagine);
         } catch (IOException ex) {
             model.addAttribute("errorMessage", "image.readError");
-            return retrieveArtist(id, model);
+            return "guest/home";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "guest/home";
         }
 
-        artistRepository.save(artist);
-        model.addAttribute("artist", artist);
-        return retrieveArtist(id, model);
+        return "redirect:/guest/artist/" + id;
     }
 
     @GetMapping("/admin/artist/delete/{artistId}")
     public String deleteArtist(@PathVariable("artistId") Long artistId, Model model) {
-        Artist artist = artistRepository.findById(artistId).orElse(null);
-        if (artist == null) {
-            model.addAttribute("errorMessage", "artist.notFound");
-
-            return authenticationController.index();
+        try {
+            artistService.deleteId(artistId);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
         }
-
-        artistRepository.delete(artist);
         model.addAttribute("errorMessage", "artist.deleted");
-        return authenticationController.index();
+        return "guest/home";
     }
 
     @GetMapping("/guest/artists")
     public String artists(Model model) {
-        model.addAttribute("artists", artistRepository.findAll());
-
+        model.addAttribute("artists", artistService.findAll());
         return "guest/artist-viewAll";
     }
 
     @PostMapping("/admin/artist/setDeath")
     public String setDeath(@RequestParam("artistId") Long id, @RequestParam("deathDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date deathDate, Model model) {
-        Artist artist = artistRepository.findById(id).orElse(null);
-        if (artist == null) {
-            model.addAttribute("errorMessage", "artist.notFound");
-
-            return authenticationController.index();
+        try {
+            artistService.setArtistIdDeath(id, deathDate);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "guest/home";
         }
 
-        if (artist.getBirthday().before(deathDate) && deathDate.before(new Date())) {
-            artist.setDeathDate(deathDate);
-            artistRepository.save(artist);
-        } else {
-            model.addAttribute("errorMessage", "artist.deathDateInvalid");
-        }
-
-        return retrieveArtist(id, model);
+        return "redirect:/guest/artist/" + id;
     }
 }

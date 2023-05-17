@@ -8,6 +8,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 
 public class MovieService {
@@ -77,12 +79,26 @@ public class MovieService {
     }
 
     @Transactional
+    public void deleteDirectorFromMovieId(long movieId) throws Exception {
+        Movie movie=findById(movieId);
+        movie.setDirector(null);
+        movieRepository.save(movie);
+    }
+
+    @Transactional
     public Iterable<Movie> findAll() {
         return movieRepository.findAll();
     }
 
     @Transactional
-    public void save(Movie movie){
+    public void save(Movie movie) {
+        movieRepository.save(movie);
+    }
+
+    @Transactional
+    public void addImagesToMovieId(Long id, Set<Image> images) throws Exception {
+        Movie movie = findById(id);
+        movie.getImages().addAll(images);
         movieRepository.save(movie);
     }
 }

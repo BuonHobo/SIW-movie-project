@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 
 
 @Controller
@@ -41,24 +41,22 @@ public class MovieController {
             return "admin/movie-add";
         }
 
-        movie.setAddedDate(new Date());
-        movie.setImages(new HashSet<>());
+        Set<Image> immagini = new HashSet<>();
 
         for (MultipartFile file : files) {
             try {
-                Image immagine = new Image(file.getOriginalFilename(), file.getBytes());
-                String format = immagine.getFormat();
-                if (!(format.equals("jpeg") || format.equals("png") || format.equals("jpg") || format.equals("webp"))) {
-                    bindingResult.reject("image.formatNotSupported");
-                    continue;
-                }
-                movie.getImages().add(immagine);
-            } catch (IOException ex) {
+                immagini.add(new Image(file));
+            } catch (IOException e) {
                 bindingResult.reject("image.readError");
+            } catch (Exception e) {
+                bindingResult.reject("image.formatNotSupported");
             }
         }
 
         if (bindingResult.hasErrors()) return "admin/movie-add";
+
+        movie.setImages(new HashSet<>());
+        movie.setImages(immagini);
 
         movieService.save(movie);
         return "redirect:/guest/movie/" + movie.getId();
@@ -79,32 +77,27 @@ public class MovieController {
 
     @PostMapping("/admin/movie/addImages/")
     public String addMovieImage(@RequestParam("movieId") Long id, @RequestParam("files") MultipartFile[] files, Model model) {
-
-        Movie movie;
-        try {
-            movie = movieService.findById(id);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "guest/home";
-        }
+        Set<Image> immagini = new HashSet<>();
 
         for (MultipartFile file : files) {
             try {
-                Image immagine = new Image(file.getOriginalFilename(), file.getBytes());
-                String format = immagine.getFormat();
-                if (!(format.equals("jpeg") || format.equals("png") || format.equals("jpg") || format.equals("webp"))) {
-                    model.addAttribute("errorMessage", "image.formatNotSupported");
-                    return retrieveMovie(id, model);
-                }
-                movie.getImages().add(immagine);
-            } catch (IOException ex) {
+                immagini.add(new Image(file));
+            } catch (IOException e) {
                 model.addAttribute("errorMessage", "image.readError");
+                return retrieveMovie(id, model);
+            } catch (Exception e) {
+                model.addAttribute("errorMessage", e.getMessage());
                 return retrieveMovie(id, model);
             }
         }
 
-        movieService.save(movie);
-        return "redirect:/guest/movie/" + movie.getId();
+        try {
+            movieService.addImagesToMovieId(id, immagini);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "guest/home";
+        }
+        return "redirect:/guest/movie/" + id;
     }
 
     @GetMapping("/admin/movie/selectDirector/{movieId}")
@@ -120,6 +113,19 @@ public class MovieController {
 
         return "/admin/movie-selectDirector";
     }
+
+    @GetMapping("/admin/movie/removeDirector/{movieId}")
+    public String removeMovieDirector(@PathVariable("movieId") Long id, Model model) {
+        try {
+            movieService.deleteDirectorFromMovieId(id);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "guest/home";
+        }
+
+        return "redirect:/guest/movie/" + id;
+    }
+
 
     @GetMapping("/admin/movie/addDirector/{movieId}/{artistId}")
     public String addMovieDirector(@PathVariable("movieId") Long movieId, @PathVariable("artistId") Long artistId, Model model) {

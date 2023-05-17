@@ -17,5 +17,4 @@ public interface ArtistRepository extends CrudRepository<Artist, Long> {
     Set<Artist> findDistinctByActedMoviesNotContaining(Movie notActed);
 
     Set<Artist> findDistinctByDirectedMoviesNotContaining(Movie notDirected);
-
 }

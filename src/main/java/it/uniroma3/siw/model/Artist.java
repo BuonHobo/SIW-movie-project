@@ -18,10 +18,10 @@ public class Artist {
     private Long id;
 
     @NotBlank
-    @Column(nullable = false,name = "first_name")
+    @Column(nullable = false, name = "first_name")
     private String firstName;
     @NotBlank
-    @Column(nullable = false,name = "last_name")
+    @Column(nullable = false, name = "last_name")
     private String lastName;
 
     @PastOrPresent
@@ -44,8 +44,8 @@ public class Artist {
     @JoinColumn
     private Image picture;
 
-    public String getFullName(){
-        return getFirstName() +' '+ getLastName();
+    public String getFullName() {
+        return getFirstName() + ' ' + getLastName();
     }
 
     @Override

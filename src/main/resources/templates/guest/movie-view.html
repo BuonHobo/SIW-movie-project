@@ -32,7 +32,7 @@
                                      th:classappend="${iterStat.first} ? 'active'">
 
 
-                                    <img th:src="@{'data:image/'+${image.getFormat()}+';base64,'+${image.getBase64()}}"
+                                    <img th:src="@{${image.getThymeleafStub()}}"
                                          style="max-height: 500px;object-fit: contain" class="d-block w-100"
                                          alt="Movie Image"><a
                                         th:if="${credentials!=null && credentials.isAdmin() && (movie.images.size()>1)}"
@@ -63,6 +63,9 @@
                                     th:text="#{movie.changeDirector}">Edit director</span> <span
                                     th:unless="${movie.director!=null}"
                                     th:text="#{movie.addDirector}">Add director</span> </a>
+                                <a th:if="${credentials!=null && credentials.isAdmin() && movie.director!=null}"
+                                   th:href="@{'/admin/movie/removeDirector/'+${movie.id}}"
+                                   th:text="#{movie.removeDirector}">Remove director</a>
                             </p>
                             <p class="card-text"><strong>Actors:</strong> <span><a
                                     th:if="${credentials!=null && credentials.isAdmin()}" th:text="#{movie.editActors}"

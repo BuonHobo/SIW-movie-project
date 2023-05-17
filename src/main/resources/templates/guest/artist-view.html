@@ -23,7 +23,7 @@
                 <div class="row g-0">
                     <div class="col-md-12">
                         <img class="card-img-top"
-                             th:src="@{'data:image/'+${artist.getPicture().getFormat()}+';base64,'+${artist.getPicture().getBase64()}}"
+                             th:src="@{${artist.getPicture().getThymeleafStub()}}"
                              style="max-height: 500px;object-fit: contain" alt="Card image cap">
                         <div class="card-body">
                             <h1 class="card-title" th:text="${artist.fullName}"></h1>

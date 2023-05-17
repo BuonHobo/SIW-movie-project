@@ -20,7 +20,7 @@
                 <div class="col" th:each="artist:${artists}">
                     <div class="card" style="width: 18rem; margin-bottom: 20px">
                         <a th:href="@{'/guest/artist/'+${artist.id}}"> <img class="card-img-top"
-                                                                            th:src="@{'data:image/'+${artist.getPicture().getFormat()}+';base64,'+${artist.getPicture().getBase64()}}"
+                                                                            th:src="@{${artist.getPicture().getThymeleafStub()}}"
                                                                             th:alt="${artist.getPicture().getFileName()}"
                                                                             height="300px"
                                                                             style="object-fit: cover"

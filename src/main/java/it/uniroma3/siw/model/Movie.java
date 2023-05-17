@@ -30,18 +30,10 @@ public class Movie {
     @NotNull
     private Date releaseDate;
 
-    @ManyToOne
-    @JoinColumn()
-    private User addedBy;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date addedDate;
-
     @OneToMany(mappedBy = "movie", cascade = CascadeType.REMOVE)
     private Set<Review> reviews;
 
     @ManyToOne
-    @JoinColumn()
     private Artist director;
 
     @ManyToMany
@@ -108,21 +100,6 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
-    public User getAddedBy() {
-        return addedBy;
-    }
-
-    public void setAddedBy(User addedBy) {
-        this.addedBy = addedBy;
-    }
-
-    public Date getAddedDate() {
-        return addedDate;
-    }
-
-    public void setAddedDate(Date addedDate) {
-        this.addedDate = addedDate;
-    }
 
     public Set<Review> getReviews() {
         return reviews;
