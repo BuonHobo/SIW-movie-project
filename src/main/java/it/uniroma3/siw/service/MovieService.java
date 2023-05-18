@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Set;
 
 @Service
@@ -22,7 +23,6 @@ public class MovieService {
     @Autowired
     ImageService imageService;
 
-    @Transactional
     public Movie findById(Long id) throws Exception {
         Movie movie = movieRepository.findById(id).orElse(null);
         if (movie == null) {
@@ -31,7 +31,6 @@ public class MovieService {
         return movie;
     }
 
-    @Transactional
     public Double getRatingByMovieId(Long id) throws Exception {
         return movieRepository.getAverageRatingByMovie(findById(id));
     }
@@ -80,12 +79,11 @@ public class MovieService {
 
     @Transactional
     public void deleteDirectorFromMovieId(long movieId) throws Exception {
-        Movie movie=findById(movieId);
+        Movie movie = findById(movieId);
         movie.setDirector(null);
         movieRepository.save(movie);
     }
 
-    @Transactional
     public Iterable<Movie> findAll() {
         return movieRepository.findAll();
     }
@@ -100,5 +98,9 @@ public class MovieService {
         Movie movie = findById(id);
         movie.getImages().addAll(images);
         movieRepository.save(movie);
+    }
+
+    public boolean existsByTitleAndReleaseDate(String title, Date releaseDate) {
+        return movieRepository.existsByTitleAndReleaseDate(title, releaseDate);
     }
 }

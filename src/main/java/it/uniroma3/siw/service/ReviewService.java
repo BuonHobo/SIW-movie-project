@@ -18,7 +18,6 @@ public class ReviewService {
     @Autowired
     MovieService movieService;
 
-    @Transactional
     public Review getUserReviewOfMovieId(Long movieId, User user) throws Exception {
         Movie movie = movieService.findById(movieId);
         return reviewRepository.findByAuthorAndMovie(user, movie)
@@ -41,7 +40,6 @@ public class ReviewService {
         }
     }
 
-    @Transactional
     public Review findById(Long reviewId) throws Exception {
         Review review = reviewRepository.findById(reviewId).orElse(null);
         if (review == null) {
@@ -59,22 +57,18 @@ public class ReviewService {
         return review.getMovie();
     }
 
-    @Transactional
     public List<Review> findAllByAuthor_Id(Long id) {
         return reviewRepository.findAllByAuthor_Id(id);
     }
 
-    @Transactional
     public Optional<Review> findByAuthorAndMovie(User user, Movie movie) {
         return reviewRepository.findByAuthorAndMovie(user, movie);
     }
 
-    @Transactional
     public List<Review> findByMovieAndNotByAuthor(Movie movie, User user) {
         return reviewRepository.findByMovieAndNotByAuthor(movie, user);
     }
 
-    @Transactional
     public List<Review> findAllByMovie(Movie movie) {
         return reviewRepository.findAllByMovie(movie);
     }

@@ -22,7 +22,6 @@ public class ArtistService {
     @Autowired
     MovieRepository movieRepository;
 
-    @Transactional
     public Artist findById(Long artistId) throws Exception {
         Artist artist = artistRepository.findById(artistId).orElse(null);
         if (artist == null) {
@@ -31,12 +30,10 @@ public class ArtistService {
         return artist;
     }
 
-    @Transactional
     public Set<Artist> findDistinctByActedMoviesNotContaining(Movie movie) {
         return artistRepository.findDistinctByActedMoviesNotContaining(movie);
     }
 
-    @Transactional
     public Set<Artist> findDistinctByDirectedMoviesNotContaining(Movie movie) {
         return artistRepository.findDistinctByDirectedMoviesNotContaining(movie);
     }
@@ -66,7 +63,6 @@ public class ArtistService {
         artistRepository.delete(artist);
     }
 
-    @Transactional
     public Iterable<Artist> findAll() {
         return artistRepository.findAll();
     }
